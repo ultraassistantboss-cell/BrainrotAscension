@@ -1,0 +1,29 @@
+{
+  "name": "BrainrotAscension",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "src/shared"
+      },
+      "GachaSpin": {
+        "$className": "RemoteEvent"
+      },
+      "ClickEvent": {
+        "$className": "RemoteEvent"
+      }
+    },
+    "ServerScriptService": {
+      "Server": {
+        "$path": "src/server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "src/client"
+        }
+      }
+    }
+  }
+}
