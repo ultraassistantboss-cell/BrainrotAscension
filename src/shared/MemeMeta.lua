@@ -15,6 +15,11 @@ local MemeMeta = {
         {Name = "GIGA CHAD", Requirement = 1000000}
     },
 
+    RebirthConfig = {
+        BaseRequirement = 1000000, -- 1M Aura to Rebirth
+        MultiplierPerRebirth = 2
+    },
+
     Zones = {
         FanumTaxZone = {
             Multiplier = 5,

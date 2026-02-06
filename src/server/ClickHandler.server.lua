@@ -8,6 +8,11 @@ ClickEvent.OnServerEvent:Connect(function(player)
         local brainCells = leaderstats:FindFirstChild("Brain Cells")
         if brainCells then
             local multiplier = 1
+            local rebirths = leaderstats:FindFirstChild("Rebirths")
+            if rebirths then
+                multiplier = 1 + (rebirths.Value * MemeMeta.RebirthConfig.MultiplierPerRebirth)
+            end
+
             local inZone = player:FindFirstChild("InTaxZone")
             
             if inZone and inZone.Value == true then

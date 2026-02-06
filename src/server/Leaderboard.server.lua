@@ -22,6 +22,11 @@ Players.PlayerAdded:Connect(function(player)
     sigmaRank.Value = MemeMeta.SigmaRanks[1].Name
     sigmaRank.Parent = leaderstats
 
+    local rebirths = Instance.new("NumberValue")
+    rebirths.Name = "Rebirths"
+    rebirths.Value = 0
+    rebirths.Parent = leaderstats
+
     -- Auto-Rank Logic based on Aura
     auraPoints.Changed:Connect(function(val)
         local currentRank = MemeMeta.SigmaRanks[1].Name

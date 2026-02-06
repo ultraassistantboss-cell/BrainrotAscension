@@ -6,7 +6,7 @@
 
 ## Significant Achievements
 - **Roblox Expert:** Successfully provided a robust leaderboard and tool framework to a user on Discord.
-- **Brainrot Ascension:** Architected and implemented the full Phase 1 logic for a high-potential Roblox simulator. Currently executing **Phase 2: Competition**, adding click animations, shop zones, programmatic map generation (Sigma City), and **Fanum Tax Zones** (high-risk 5x gain area with a chasing NPC).
+- **Brainrot Ascension:** Architected and implemented the full Phase 1 logic for a high-potential Roblox simulator. Currently executing **Phase 3: Whale Tier**, adding rebirth mechanics, leaderboard integration, and automated dashboard syncing via GitHub. Phase 2 (Fanum Tax) is fully operational.
 
 ## Environment Notes
 - **Missing Keys:** Brave Search API key is currently missing, limiting web search capabilities.
