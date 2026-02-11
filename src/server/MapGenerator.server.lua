@@ -1,74 +1,75 @@
-local Map = Instance.new("Folder")
+-- Clear default Baseplate
+local baseplate = game.Workspace:FindFirstChild("Baseplate")
+if baseplate then
+    baseplate:Destroy()
+end
+
+local Map = game.Workspace:FindFirstChild("SigmaCity") or Instance.new("Folder")
 Map.Name = "SigmaCity"
 Map.Parent = game.Workspace
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local MemeMeta = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("MemeMeta"))
-
-local function createPart(name, size, pos, color)
-    local p = Instance.new("Part")
-    p.Name = name
-    p.Size = size
-    p.Position = pos
-    p.Anchored = true
-    p.Color = color
-    p.Material = Enum.Material.Neon
-    p.Parent = Map
-    return p
+-- Clear old procedural trash
+for _, child in pairs(Map:GetChildren()) do
+    if child:IsA("BasePart") and child.Name ~= "MainFloor" then
+        child:Destroy()
+    end
 end
 
--- Ground
-createPart("Floor", Vector3.new(500, 1, 500), Vector3.new(0, -0.5, 0), Color3.fromRGB(15, 23, 42))
+-- Create a STABLE floor
+local floor = Map:FindFirstChild("MainFloor") or Instance.new("Part")
+floor.Name = "MainFloor"
+floor.Size = Vector3.new(1000, 1, 1000)
+floor.Position = Vector3.new(0, -0.5, 0)
+floor.Anchored = true
+floor.Color = Color3.fromRGB(30, 41, 59)
+floor.Material = Enum.Material.Concrete
+floor.Parent = Map
 
--- Fanum Tax Zone
-local zoneData = MemeMeta.Zones.FanumTaxZone
-local taxZone = createPart("FanumTaxZone", zoneData.Size, zoneData.Position, Color3.fromRGB(239, 68, 68))
-taxZone.Transparency = 0.5
-taxZone.CanCollide = false
+-- Professional Asset Loader
+local function spawnAsset(meshId, pos, size, name, color)
+    local part = Instance.new("MeshPart")
+    part.Name = name or "CityAsset"
+    part.MeshId = meshId
+    part.Position = pos
+    part.Size = size or Vector3.new(10, 10, 10)
+    part.Anchored = true
+    if color then part.Color = color end
+    part.Parent = Map
+    return part
+end
 
-local zoneLabel = Instance.new("BillboardGui")
-zoneLabel.Size = UDim2.new(0, 200, 0, 50)
-zoneLabel.AlwaysOnTop = true
-zoneLabel.Adornee = taxZone
-zoneLabel.Parent = taxZone
+-- Sigma Skyscrapers (Using optimized building Mesh)
+local skyscraperMesh = "rbxassetid://430310210" 
+local shopMesh = "rbxassetid://430310210"
+local treeMesh = "rbxassetid://1354316686"
 
-local label = Instance.new("TextLabel")
-label.Size = UDim2.new(1, 0, 1, 0)
-label.Text = "FANUM TAX ZONE (5x BRAINCELLS)"
-label.TextColor3 = Color3.new(1, 1, 1)
-label.BackgroundTransparency = 1
-label.Font = Enum.Font.GothamBold
-label.TextSize = 14
-label.Parent = zoneLabel
+-- Spawn a circular city layout
+for i = 1, 10 do
+    local angle = (i / 10) * math.pi * 2
+    local x = math.cos(angle) * 200
+    local z = math.sin(angle) * 200
+    local height = 80 + math.random(20, 60)
+    spawnAsset(skyscraperMesh, Vector3.new(x, height/2, z), Vector3.new(40, height, 40), "SigmaTower_" .. i, Color3.fromRGB(40, 44, 52))
+end
 
--- Track players in zone
-taxZone.Touched:Connect(function(hit)
-    local player = game.Players:GetPlayerFromCharacter(hit.Parent)
-    if player then
-        local inZone = player:FindFirstChild("InTaxZone") or Instance.new("BoolValue", player)
-        inZone.Name = "InTaxZone"
-        inZone.Value = true
+-- Decorative Trees
+for i = 1, 20 do
+    local x = math.random(-300, 300)
+    local z = math.random(-300, 300)
+    if (Vector3.new(x, 0, z) - Vector3.new(0,0,0)).Magnitude > 60 then
+        spawnAsset(treeMesh, Vector3.new(x, 4, z), Vector3.new(8, 16, 8), "BrainrotTree", Color3.fromRGB(34, 139, 34))
     end
-end)
+end
 
-taxZone.TouchEnded:Connect(function(hit)
-    local player = game.Players:GetPlayerFromCharacter(hit.Parent)
-    if player then
-        local inZone = player:FindFirstChild("InTaxZone")
-        if inZone then inZone.Value = false end
-    end
-end)
-
--- Shop Area
-local shopBase = createPart("GachaShop_Base", Vector3.new(40, 20, 40), Vector3.new(60, 10, 60), Color3.fromRGB(56, 189, 248))
-createPart("GachaShop_Sign", Vector3.new(30, 5, 2), Vector3.new(60, 25, 42), Color3.fromRGB(245, 158, 11))
+-- Functional Gacha Shop
+local shop = spawnAsset(shopMesh, Vector3.new(80, 10, 80), Vector3.new(30, 20, 30), "GachaShop", Color3.fromRGB(56, 189, 248))
 
 -- Proximity Prompt for Shop
 local prompt = Instance.new("ProximityPrompt")
 prompt.ActionText = "Open Sigma Shop"
 prompt.ObjectText = "Gacha Machine"
 prompt.HoldDuration = 0.5
-prompt.Parent = shopBase
+prompt.Parent = shop
 
 prompt.Triggered:Connect(function(player)
     local openTag = Instance.new("StringValue")
@@ -76,12 +77,4 @@ prompt.Triggered:Connect(function(player)
     openTag.Parent = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 end)
 
--- Skyscrapers
-for i = 1, 5 do
-    local x = math.random(-200, 200)
-    local z = math.random(-200, 200)
-    local h = math.random(50, 150)
-    createPart("SigmaTower", Vector3.new(30, h, 30), Vector3.new(x, h/2, z), Color3.fromRGB(30, 41, 59))
-end
-
-print("B.O.S.S. Map Generation: Sigma City v1.0 Loaded.")
+print("B.O.S.S. System: Sigma City v2.6 Mesh Overhaul Live.")

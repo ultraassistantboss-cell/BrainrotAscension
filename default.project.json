@@ -11,6 +11,9 @@
       },
       "ClickEvent": {
         "$className": "RemoteEvent"
+      },
+      "RebirthEvent": {
+        "$className": "RemoteEvent"
       }
     },
     "ServerScriptService": {
