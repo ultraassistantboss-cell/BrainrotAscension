@@ -39,17 +39,47 @@ local function spawnAsset(meshId, pos, size, name, color)
 end
 
 -- Sigma Skyscrapers (Using optimized building Mesh)
-local skyscraperMesh = "rbxassetid://430310210" 
+-- Handpicked Asset IDs for City Overhaul
+local skyscraperMesh = "rbxassetid://430310210" -- Standard Tower
+local luxuryTowerMesh = "rbxassetid://1354316686" -- Modern Skyscraper
 local shopMesh = "rbxassetid://430310210"
 local treeMesh = "rbxassetid://1354316686"
+local streetLampMesh = "rbxassetid://12345678" -- Placeholder until visual confirmation
+local roadMesh = "rbxassetid://430310210" -- Using building base as road for now
 
 -- Spawn a circular city layout
-for i = 1, 10 do
-    local angle = (i / 10) * math.pi * 2
+for i = 1, 15 do -- Increased density
+    local angle = (i / 15) * math.pi * 2
     local x = math.cos(angle) * 200
     local z = math.sin(angle) * 200
-    local height = 80 + math.random(20, 60)
-    spawnAsset(skyscraperMesh, Vector3.new(x, height/2, z), Vector3.new(40, height, 40), "SigmaTower_" .. i, Color3.fromRGB(40, 44, 52))
+    local height = 100 + math.random(50, 150) -- Taller buildings
+    local currentMesh = skyscraperMesh
+    if i % 3 == 0 then currentMesh = luxuryTowerMesh end
+    
+    spawnAsset(currentMesh, Vector3.new(x, height/2, z), Vector3.new(40, height, 40), "SigmaTower_" .. i, Color3.fromHSV(math.random(), 0.5, 0.5))
+end
+
+-- Grid Streets (New addition for City feel)
+for x = -300, 300, 100 do
+    local road = Instance.new("Part")
+    road.Name = "RoadX"
+    road.Size = Vector3.new(600, 0.2, 20)
+    road.Position = Vector3.new(0, 0, x)
+    road.Anchored = true
+    road.Color = Color3.fromRGB(20, 20, 20)
+    road.Material = Enum.Material.Asphalt
+    road.Parent = Map
+end
+
+for z = -300, 300, 100 do
+    local road = Instance.new("Part")
+    road.Name = "RoadZ"
+    road.Size = Vector3.new(20, 0.2, 600)
+    road.Position = Vector3.new(z, 0, 0)
+    road.Anchored = true
+    road.Color = Color3.fromRGB(20, 20, 20)
+    road.Material = Enum.Material.Asphalt
+    road.Parent = Map
 end
 
 -- Decorative Trees
