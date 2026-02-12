@@ -1,7 +1,11 @@
+-- BOSS CITY BUILDER v3.0 - LOCKING IN
+print("B.O.S.S.: Initializing City Build...")
+
 -- Clear default Baseplate
 local baseplate = game.Workspace:FindFirstChild("Baseplate")
 if baseplate then
     baseplate:Destroy()
+    print("B.O.S.S.: Baseplate Destroyed.")
 end
 
 local Map = game.Workspace:FindFirstChild("SigmaCity") or Instance.new("Folder")
@@ -10,101 +14,83 @@ Map.Parent = game.Workspace
 
 -- Clear old procedural trash
 for _, child in pairs(Map:GetChildren()) do
-    if child:IsA("BasePart") and child.Name ~= "MainFloor" then
-        child:Destroy()
-    end
+    child:Destroy()
 end
 
 -- Create a STABLE floor
-local floor = Map:FindFirstChild("MainFloor") or Instance.new("Part")
+local floor = Instance.new("Part")
 floor.Name = "MainFloor"
-floor.Size = Vector3.new(1000, 1, 1000)
+floor.Size = Vector3.new(2000, 1, 2000)
 floor.Position = Vector3.new(0, -0.5, 0)
 floor.Anchored = true
-floor.Color = Color3.fromRGB(30, 41, 59)
+floor.Color = Color3.fromRGB(15, 23, 42)
 floor.Material = Enum.Material.Concrete
 floor.Parent = Map
 
--- Professional Asset Loader
-local function spawnAsset(meshId, pos, size, name, color)
-    local part = Instance.new("MeshPart")
-    part.Name = name or "CityAsset"
-    part.MeshId = meshId
-    part.Position = pos
-    part.Size = size or Vector3.new(10, 10, 10)
-    part.Anchored = true
-    if color then part.Color = color end
-    part.Parent = Map
-    return part
-end
-
--- Sigma Skyscrapers (Using optimized building Mesh)
--- Handpicked Asset IDs for City Overhaul
-local skyscraperMesh = "rbxassetid://430310210" -- Standard Tower
-local luxuryTowerMesh = "rbxassetid://1354316686" -- Modern Skyscraper
-local shopMesh = "rbxassetid://430310210"
-local treeMesh = "rbxassetid://1354316686"
-local streetLampMesh = "rbxassetid://12345678" -- Placeholder until visual confirmation
-local roadMesh = "rbxassetid://430310210" -- Using building base as road for now
-
--- Spawn a circular city layout
-for i = 1, 15 do -- Increased density
-    local angle = (i / 15) * math.pi * 2
-    local x = math.cos(angle) * 200
-    local z = math.sin(angle) * 200
-    local height = 100 + math.random(50, 150) -- Taller buildings
-    local currentMesh = skyscraperMesh
-    if i % 3 == 0 then currentMesh = luxuryTowerMesh end
+-- Asset Spawner (Part-based Buildings with Windows)
+local function spawnBuilding(pos, size, color)
+    local b = Instance.new("Part")
+    b.Name = "Skyscraper"
+    b.Size = size
+    b.Position = pos
+    b.Anchored = true
+    b.Material = Enum.Material.Glass
+    b.Color = color or Color3.fromRGB(30, 41, 59)
+    b.Parent = Map
     
-    spawnAsset(currentMesh, Vector3.new(x, height/2, z), Vector3.new(40, height, 40), "SigmaTower_" .. i, Color3.fromHSV(math.random(), 0.5, 0.5))
-end
-
--- Grid Streets (New addition for City feel)
-for x = -300, 300, 100 do
-    local road = Instance.new("Part")
-    road.Name = "RoadX"
-    road.Size = Vector3.new(600, 0.2, 20)
-    road.Position = Vector3.new(0, 0, x)
-    road.Anchored = true
-    road.Color = Color3.fromRGB(20, 20, 20)
-    road.Material = Enum.Material.Asphalt
-    road.Parent = Map
-end
-
-for z = -300, 300, 100 do
-    local road = Instance.new("Part")
-    road.Name = "RoadZ"
-    road.Size = Vector3.new(20, 0.2, 600)
-    road.Position = Vector3.new(z, 0, 0)
-    road.Anchored = true
-    road.Color = Color3.fromRGB(20, 20, 20)
-    road.Material = Enum.Material.Asphalt
-    road.Parent = Map
-end
-
--- Decorative Trees
-for i = 1, 20 do
-    local x = math.random(-300, 300)
-    local z = math.random(-300, 300)
-    if (Vector3.new(x, 0, z) - Vector3.new(0,0,0)).Magnitude > 60 then
-        spawnAsset(treeMesh, Vector3.new(x, 4, z), Vector3.new(8, 16, 8), "BrainrotTree", Color3.fromRGB(34, 139, 34))
+    -- Add some "windows" (Neon strips)
+    for i = 1, 5 do
+        local win = Instance.new("Part")
+        win.Name = "WindowStrip"
+        win.Size = Vector3.new(size.X + 0.5, 2, size.Z + 0.5)
+        win.Position = pos + Vector3.new(0, (i * (size.Y/6)) - (size.Y/2), 0)
+        win.Anchored = true
+        win.CanCollide = false
+        win.Material = Enum.Material.Neon
+        win.Color = Color3.fromRGB(255, 255, 255)
+        win.Transparency = 0.5
+        win.Parent = b
     end
 end
 
--- Functional Gacha Shop
-local shop = spawnAsset(shopMesh, Vector3.new(80, 10, 80), Vector3.new(30, 20, 30), "GachaShop", Color3.fromRGB(56, 189, 248))
+-- Build a Massive Grid of Skyscrapers
+for x = -800, 800, 200 do
+    for z = -800, 800, 200 do
+        if math.random() > 0.2 then
+            local height = 200 + math.random(100, 400)
+            local color = Color3.fromHSV(math.random(), 0.7, 0.5)
+            spawnBuilding(Vector3.new(x, height/2, z), Vector3.new(80, height, 80), color)
+        end
+    end
+end
 
--- Proximity Prompt for Shop
-local prompt = Instance.new("ProximityPrompt")
-prompt.ActionText = "Open Sigma Shop"
-prompt.ObjectText = "Gacha Machine"
-prompt.HoldDuration = 0.5
-prompt.Parent = shop
+-- Add High-Speed Roads
+local function spawnRoad(pos, size)
+    local r = Instance.new("Part")
+    r.Name = "AsphaltRoad"
+    r.Size = size
+    r.Position = pos
+    r.Anchored = true
+    r.Color = Color3.fromRGB(20, 20, 20)
+    r.Material = Enum.Material.Asphalt
+    r.Parent = Map
+    
+    -- Yellow line
+    local line = Instance.new("Part")
+    line.Size = (size.X > size.Z) and Vector3.new(size.X, 0.1, 1) or Vector3.new(1, 0.1, size.Z)
+    line.Position = pos + Vector3.new(0, 0.1, 0)
+    line.Anchored = true
+    line.CanCollide = false
+    line.Color = Color3.fromRGB(255, 255, 0)
+    line.Material = Enum.Material.Neon
+    line.Parent = r
+end
 
-prompt.Triggered:Connect(function(player)
-    local openTag = Instance.new("StringValue")
-    openTag.Name = "OpenShop"
-    openTag.Parent = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
-end)
+for x = -900, 900, 200 do
+    spawnRoad(Vector3.new(x, 0.2, 0), Vector3.new(40, 0.2, 2000))
+end
+for z = -900, 900, 200 do
+    spawnRoad(Vector3.new(0, 0.2, z), Vector3.new(2000, 0.2, 40))
+end
 
-print("B.O.S.S. System: Sigma City v2.6 Mesh Overhaul Live.")
+print("B.O.S.S.: City v3.0 Build Complete. The Skyline is LIVE.")
