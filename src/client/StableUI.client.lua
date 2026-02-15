@@ -82,9 +82,27 @@ local function createMainUI(player)
         debounce = true
         
         -- Local visual feedback
+        local originalSize = clickButton.Size
         clickButton:TweenSize(UDim2.new(0, 165, 0, 165), "Out", "Quad", 0.05, true)
         task.wait(0.05)
-        clickButton:TweenSize(UDim2.new(0, 150, 0, 150), "Out", "Quad", 0.05, true)
+        clickButton:TweenSize(originalSize, "Out", "Quad", 0.05, true)
+        
+        -- Create a text pop-up animation
+        local popupText = Instance.new("TextLabel")
+        popupText.Text = "+1" -- Or current multiplier
+        popupText.Font = Enum.Font.GothamBold
+        popupText.TextSize = 24
+        popupText.TextColor3 = Color3.fromRGB(255, 255, 0) -- Yellow for clicks
+        popupText.BackgroundTransparency = 1
+        popupText.Position = UDim2.new(clickButton.Position.X.Scale, clickButton.Position.X.Offset, clickButton.Position.Y.Scale - 0.1, clickButton.Position.Y.Offset)
+        popupText.Size = UDim2.new(0, 100, 0, 30)
+        popupText.ZIndex = 2 -- Ensure it's above other UI elements
+        popupText.Parent = clickButton.Parent
+        
+        popupText:TweenPosition(UDim2.new(popupText.Position.X.Scale, popupText.Position.X.Offset, popupText.Position.Y.Scale - 0.05, popupText.Position.Y.Offset - 20), "Out", "Quad", 0.4, true)
+        popupText:TweenTransparency(Enum.TweenProperty.new("TextTransparency"), 1, "Out", "Quad", 0.4, true)
+        
+        game:GetService("Debris"):AddItem(popupText, 0.5)
         
         ReplicatedStorage:WaitForChild("ClickEvent"):FireServer()
         

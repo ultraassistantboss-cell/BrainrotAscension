@@ -12,7 +12,7 @@ screenGui.Parent = pgui
 
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 300, 0, 200)
-frame.Position = UDim2.new(0.5, -150, 0.8, -100)
+frame.Position = UDim2.new(0.5, -150, 0.65, -100)
 frame.BackgroundColor3 = Color3.fromRGB(15, 23, 42)
 frame.BackgroundTransparency = 0.2
 frame.Parent = screenGui
