@@ -54,9 +54,24 @@ local function spawnBuilding(pos, size, color)
 end
 
 -- Build a Massive Grid of Skyscrapers
+local BrainrotAssets = {
+    "rbxassetid://72466520546640",
+}
+
+local function spawnBrainrot(pos)
+    local assetId = BrainrotAssets[math.random(#BrainrotAssets)]
+    local model = game:GetService("InsertService"):LoadAsset(tonumber(assetId:match("%d+")))
+    model.Parent = Map
+    model:SetPrimaryPartCFrame(CFrame.new(pos + Vector3.new(0, 5, 0)))
+    print("B.O.S.S.: Deployed Brainrot Asset " .. assetId)
+end
+
 for x = -800, 800, 200 do
     for z = -800, 800, 200 do
         if math.random() > 0.2 then
+            local pos = Vector3.new(x + 50, 0, z + 50)
+            spawnBrainrot(pos)
+            
             local height = 200 + math.random(100, 400)
             local color = Color3.fromHSV(math.random(), 0.7, 0.5)
             spawnBuilding(Vector3.new(x, height/2, z), Vector3.new(80, height, 80), color)
