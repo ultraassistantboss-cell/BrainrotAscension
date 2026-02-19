@@ -53,17 +53,45 @@ local function spawnBuilding(pos, size, color)
     end
 end
 
--- Build a Massive Grid of Skyscrapers
+-- Massive Brainrot Meta Pack ID
 local BrainrotAssets = {
-    "rbxassetid://72466520546640",
+    "72466520546640", -- User provided pack
+    "16277815615",    -- Skibidi Toilet
+    "16401666491",    -- Grimace Shake
 }
 
 local function spawnBrainrot(pos)
     local assetId = BrainrotAssets[math.random(#BrainrotAssets)]
-    local model = game:GetService("InsertService"):LoadAsset(tonumber(assetId:match("%d+")))
-    model.Parent = Map
-    model:SetPrimaryPartCFrame(CFrame.new(pos + Vector3.new(0, 5, 0)))
-    print("B.O.S.S.: Deployed Brainrot Asset " .. assetId)
+    local success, model = pcall(function()
+        return game:GetService("InsertService"):LoadAsset(tonumber(assetId))
+    end)
+    
+    if success and model then
+        model.Parent = Map
+        -- Models from LoadAsset are usually nested
+        local actualModel = model:GetChildren()[1]
+        if actualModel then
+            actualModel.Parent = Map
+            if actualModel:IsA("Model") then
+                actualModel:SetPrimaryPartCFrame(CFrame.new(pos + Vector3.new(0, 5, 0)))
+            elseif actualModel:IsA("BasePart") then
+                actualModel.Position = pos + Vector3.new(0, 5, 0)
+                actualModel.Anchored = true
+            end
+        end
+        model:Destroy()
+        print("B.O.S.S.: Deployed Brainrot Asset " .. assetId)
+    else
+        -- Fallback: Giant Rainbow Block
+        local fallback = Instance.new("Part")
+        fallback.Size = Vector3.new(10, 20, 10)
+        fallback.Position = pos + Vector3.new(0, 10, 0)
+        fallback.Anchored = true
+        fallback.Color = Color3.fromHSV(math.random(), 1, 1)
+        fallback.Material = Enum.Material.Neon
+        fallback.Parent = Map
+        print("B.O.S.S.: Asset load failed for " .. assetId .. ", using fallback.")
+    end
 end
 
 for x = -800, 800, 200 do

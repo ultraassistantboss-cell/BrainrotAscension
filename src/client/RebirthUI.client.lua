@@ -11,8 +11,8 @@ screenGui.Name = "RebirthGui"
 screenGui.Parent = pgui
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 200)
-frame.Position = UDim2.new(0.5, -150, 0.65, -100)
+frame.Size = UDim2.new(0, 250, 0, 180)
+frame.Position = UDim2.new(1, -270, 0.5, -90) -- Move to the right side
 frame.BackgroundColor3 = Color3.fromRGB(15, 23, 42)
 frame.BackgroundTransparency = 0.2
 frame.Parent = screenGui
@@ -54,8 +54,11 @@ btnCorner.Parent = rebirthBtn
 
 -- Logic
 local function updateUI()
-    local aura = player:WaitForChild("leaderstats"):WaitForChild("Aura").Value
-    if aura >= MemeMeta.RebirthConfig.BaseRequirement then
+    local stats = player:WaitForChild("leaderstats", 10)
+    if not stats then return end
+    local aura = stats:WaitForChild("Aura")
+    
+    if aura.Value >= MemeMeta.RebirthConfig.BaseRequirement then
         rebirthBtn.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
         rebirthBtn.Interactable = true
     else
@@ -64,13 +67,14 @@ local function updateUI()
     end
 end
 
-player:WaitForChild("leaderstats"):WaitForChild("Aura").Changed:Connect(updateUI)
-updateUI()
+task.spawn(function()
+    local stats = player:WaitForChild("leaderstats")
+    stats:WaitForChild("Aura").Changed:Connect(updateUI)
+    updateUI()
+end)
 
 -- Remote event for rebirth
-local RebirthEvent = Instance.new("RemoteEvent")
-RebirthEvent.Name = "RebirthEvent"
-RebirthEvent.Parent = ReplicatedStorage
+local RebirthEvent = ReplicatedStorage:WaitForChild("RebirthEvent")
 
 rebirthBtn.MouseButton1Click:Connect(function()
     RebirthEvent:FireServer()

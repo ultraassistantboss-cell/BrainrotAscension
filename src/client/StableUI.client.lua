@@ -9,20 +9,22 @@ local function createMainUI(player)
     -- Main ScreenGui
     local screenGui = pgui:FindFirstChild("SigmaMainGui") or Instance.new("ScreenGui")
     screenGui.Name = "SigmaMainGui"
-    screenGui.ResetOnSpawn = false -- FIX: UI won't disappear on death
+    screenGui.ResetOnSpawn = false
     screenGui.IgnoreGuiInset = true
+    screenGui.DisplayOrder = 10 -- Ensure it's above other UIs
     screenGui.Parent = pgui
 
     -- Click Button
     local clickButton = screenGui:FindFirstChild("MainClicker") or Instance.new("TextButton")
     clickButton.Name = "MainClicker"
-    clickButton.Size = UDim2.new(0, 150, 0, 150)
-    clickButton.Position = UDim2.new(0.5, -75, 0.8, -75)
+    clickButton.Size = UDim2.new(0, 200, 0, 200) -- Bigger for more Sigma energy
+    clickButton.Position = UDim2.new(0.5, -100, 0.85, -100)
     clickButton.BackgroundColor3 = Color3.fromRGB(56, 189, 248)
     clickButton.Text = "CLICK"
     clickButton.Font = Enum.Font.GothamBold
     clickButton.TextColor3 = Color3.new(1, 1, 1)
-    clickButton.TextSize = 28
+    clickButton.TextSize = 35
+    clickButton.ZIndex = 5
     clickButton.Parent = screenGui
     
     if not clickButton:FindFirstChild("UICorner") then
@@ -75,7 +77,7 @@ local function createMainUI(player)
         end
     end)
 
-    -- Click Logic
+-- Click Logic
     local debounce = false
     clickButton.MouseButton1Click:Connect(function()
         if debounce then return end
@@ -83,33 +85,32 @@ local function createMainUI(player)
         
         -- Local visual feedback
         local originalSize = clickButton.Size
-        clickButton:TweenSize(UDim2.new(0, 165, 0, 165), "Out", "Quad", 0.05, true)
+        clickButton:TweenSize(UDim2.new(0, 215, 0, 215), "Out", "Quad", 0.05, true)
         task.wait(0.05)
         clickButton:TweenSize(originalSize, "Out", "Quad", 0.05, true)
         
         -- Create a text pop-up animation
         local popupText = Instance.new("TextLabel")
-        popupText.Text = "+1" -- Or current multiplier
+        popupText.Text = "+1" 
         popupText.Font = Enum.Font.GothamBold
-        popupText.TextSize = 24
-        popupText.TextColor3 = Color3.fromRGB(255, 255, 0) -- Yellow for clicks
+        popupText.TextSize = 30
+        popupText.TextColor3 = Color3.fromRGB(255, 255, 0)
         popupText.BackgroundTransparency = 1
-        popupText.Position = UDim2.new(clickButton.Position.X.Scale, clickButton.Position.X.Offset, clickButton.Position.Y.Scale - 0.1, clickButton.Position.Y.Offset)
+        popupText.Position = UDim2.new(0.5, math.random(-100, 100), 0.7, math.random(-50, 50))
         popupText.Size = UDim2.new(0, 100, 0, 30)
-        popupText.ZIndex = 2 -- Ensure it's above other UI elements
-        popupText.Parent = clickButton.Parent
+        popupText.ZIndex = 10
+        popupText.Parent = screenGui
         
-        popupText:TweenPosition(UDim2.new(popupText.Position.X.Scale, popupText.Position.X.Offset, popupText.Position.Y.Scale - 0.05, popupText.Position.Y.Offset - 20), "Out", "Quad", 0.4, true)
-        popupText:TweenTransparency(Enum.TweenProperty.new("TextTransparency"), 1, "Out", "Quad", 0.4, true)
+        popupText:TweenPosition(UDim2.new(popupText.Position.X.Scale, popupText.Position.X.Offset, popupText.Position.Y.Scale - 0.2, popupText.Position.Y.Offset), "Out", "Quad", 0.4, true)
         
-        game:GetService("Debris"):AddItem(popupText, 0.5)
+        game:GetService("Debris"):AddItem(popupText, 0.4)
         
         ReplicatedStorage:WaitForChild("ClickEvent"):FireServer()
         
-        task.wait(0.05) -- Faster debounce for better "feel"
+        task.wait(0.1)
         debounce = false
     end)
 end
 
-Players.PlayerAdded:Connect(createMainUI)
-for _, p in pairs(Players:GetPlayers()) do createMainUI(p) end
+-- Initialize for local player only
+createMainUI(Players.LocalPlayer)
